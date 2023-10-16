@@ -8,7 +8,12 @@ class LogSorter(tk.Tk):
         super().__init__()
 
         self.title('Log Sorter')
-        self.widgets_visible = False  # флаг видимости виджетов
+        self.current_menu = None  # текущее всплывающее меню
+        self.menus = []
+
+        self.folder_path = tk.StringVar()
+        self.save_folder_path = tk.StringVar()
+
         self.create_ui()
 
     def create_ui(self):
@@ -41,36 +46,48 @@ class LogSorter(tk.Tk):
         query_entry = tk.Entry(self, width=50)
         query_entry.pack(padx=10, pady=5)
 
-        # Кнопка сортировки
-        sort_btn = tk.Button(self, text="Сортировка папок с логами по содержимому файлов", command=self.toggle_sort_ui)
-        sort_btn.pack(padx=10, pady=10)
+        menus_config = [
+            {
+                "button_text": "Сортировка папок с логами по содержимому файлов",
+                "label_text": "Настройка формата сохранения 1:",
+                "entry_width": 50,
+                "progressbar_length": 300
+            },
+            {
+                "button_text": "Сортировка папок с логами по названию файлов",
+                "label_text": "Настройка формата сохранения 2:",
+                "entry_width": 30,
+                "progressbar_length": 200
+            }
+            # ... добавьте другие меню по аналогии
+        ]
 
-        # Настройка формата сохранения
-        self.format_lbl = tk.Label(self, text="Настройка формата сохранения:")
-        self.format_entry = tk.Entry(self, width=50)
+        for menu in menus_config:
+            button = tk.Button(self, text=menu["button_text"], command=lambda m=menu: self.toggle_sort_ui(m))
+            button.pack(padx=10, pady=5)
 
-        # Прогрессбар
-        self.progress = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=300, mode='determinate')
+            menu["widgets"] = {
+                "label": tk.Label(self, text=menu["label_text"]),
+                "entry": tk.Entry(self, width=menu["entry_width"]),
+                "progressbar": ttk.Progressbar(self, orient=tk.HORIZONTAL, length=menu["progressbar_length"], mode='determinate'),
+                "start_button": tk.Button(self, text="Начать сортировку", command=self.start_sorting)
+            }
 
-        # Кнопка начала сортировки
-        def start_sorting():
-            pass  # Ваша логика сортировки
+            self.menus.append(menu)
 
-        self.start_sort_btn = tk.Button(self, text="Начать сортировку", command=start_sorting)
+    def toggle_sort_ui(self, menu):
+        if self.current_menu:
+            for widget in self.current_menu["widgets"].values():
+                widget.pack_forget()
 
-    def toggle_sort_ui(self):
-        if self.widgets_visible:
-            self.format_lbl.pack_forget()
-            self.format_entry.pack_forget()
-            self.progress.pack_forget()
-            self.start_sort_btn.pack_forget()
-        else:
-            self.format_lbl.pack(padx=10, pady=5)
-            self.format_entry.pack(padx=10, pady=5)
-            self.progress.pack(padx=10, pady=10)
-            self.start_sort_btn.pack(padx=10, pady=10)
+        for widget in menu["widgets"].values():
+            widget.pack(padx=10, pady=5)
 
-        self.widgets_visible = not self.widgets_visible
+        self.current_menu = menu
+
+    def start_sorting(self):
+        # Здесь ваша логика сортировки
+        pass
 
     def choose_folder(self):
         folder_selected = filedialog.askdirectory()
@@ -79,5 +96,4 @@ class LogSorter(tk.Tk):
     def choose_save_folder(self):
         folder_selected = filedialog.askdirectory()
         self.save_folder_path.set(folder_selected)
-
 
