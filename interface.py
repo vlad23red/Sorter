@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+import functools
 
 
 class LogSorter(tk.Tk):
@@ -54,93 +55,108 @@ class LogSorter(tk.Tk):
                 "button_text": "Сортировка папок с логами по содержимому файлов",
                 "label_text": "Настройка формата сохранения 1:",
                 "entry_width": 50,
-                "progressbar_length": 300
+                "progressbar_length": 300,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка папок с логами по названию файлов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка папок с логами по названию папок",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка папок с логами по датам файлов.",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка файлов и логов по содержимому файлов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка файлов и логов по названию файлов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": " Сортировка папок из логов по названию папок",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка паролей из логов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Нормализатор паролей из логов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Нормализатор почт (mail:pass) из логов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка куков из логов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка строк в файлах из логов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Сортировка папок с логами по названию файлов",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Экстрактор ссылок из логов с паролями",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             },
             {
                 "button_text": "Очистка логов от файлов по расширению (.exe ...)",
                 "label_text": "Настройка формата сохранения 2:",
                 "entry_width": 30,
-                "progressbar_length": 200
+                "progressbar_length": 200,
+                "is_expanded": False
             }
-            # ... добавьте другие меню по аналогии
+
         ]
 
         # Упаковка canvas и scrollbar перед циклом
@@ -157,26 +173,17 @@ class LogSorter(tk.Tk):
         self.canvas.create_window((0, 0), window=content_frame, anchor="nw")
 
         x_position = 0
-
         for menu in menus_config:
-            # Создание фрейма для каждого меню внутри content_frame
             frame = tk.Frame(content_frame)
+            button = tk.Button(frame, text=menu["button_text"],
+                               command=functools.partial(self.show_sort_ui, menu, frame))
 
-            button = tk.Button(frame, text=menu["button_text"], command=lambda m=menu: self.toggle_sort_ui(m))
             button.grid(row=0, column=0, padx=10, pady=5)
 
+            menu["frame"] = frame
             self.menus.append(menu)
-
-            menu["widgets"] = {
-                "label": tk.Label(frame, text=menu["label_text"]),
-                "entry": tk.Entry(frame, width=menu["entry_width"]),
-                "progressbar": ttk.Progressbar(frame, orient=tk.HORIZONTAL, length=menu["progressbar_length"],
-                                               mode='determinate'),
-                "start_button": tk.Button(frame, text="Начать сортировку", command=self.start_sorting)
-            }
-
             frame.grid(row=0, column=x_position, padx=10, pady=5)
-            x_position += 1  # Increase the column position
+            x_position += 1
 
             # Обновление области прокрутки после добавления всех виджетов
             content_frame.update_idletasks()
@@ -185,24 +192,30 @@ class LogSorter(tk.Tk):
             self.bind("<Configure>", self.update_scrollregion)
         x_position += 1
 
-    def toggle_sort_ui(self, menu, frame):
-        if self.current_menu:
-            self.current_menu.destroy()
+    def show_sort_ui(self, menu, frame):
+        # Collapse all other menus
+        for m in self.menus:
+            for widget in m["frame"].winfo_children():
+                if widget != m["frame"].winfo_children()[0]:  # This will ensure the button remains
+                    widget.grid_forget()
+            m["is_expanded"] = False
 
-        label = tk.Label(frame, text=menu["label_text"])
-        label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        # Expand the clicked menu
+        if not menu["is_expanded"]:
+            label = tk.Label(frame, text=menu["label_text"])
+            label.grid(row=1, column=0, padx=10, pady=5)
 
-        entry = tk.Entry(frame, width=menu["entry_width"])
-        entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+            entry = tk.Entry(frame, width=menu["entry_width"])
+            entry.grid(row=2, column=0, padx=10, pady=5)
 
-        progressbar = ttk.Progressbar(frame, orient=tk.HORIZONTAL, length=menu["progressbar_length"],
-                                      mode='determinate')
-        progressbar.grid(row=2, column=0, columnspan=2, padx=10, pady=5)
+            progressbar = ttk.Progressbar(frame, orient=tk.HORIZONTAL, length=menu["progressbar_length"],
+                                          mode='determinate')
+            progressbar.grid(row=3, column=0, padx=10, pady=5)
 
-        start_button = tk.Button(frame, text="Начать сортировку", command=self.start_sorting)
-        start_button.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+            start_button = tk.Button(frame, text="Начать сортировку", command=self.start_sorting)
+            start_button.grid(row=4, column=0, padx=10, pady=5)
 
-        self.current_menu = frame
+            menu["is_expanded"] = True
     def start_sorting(self):
         # Your sorting logic here
         pass
