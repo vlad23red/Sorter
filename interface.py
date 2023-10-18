@@ -178,11 +178,11 @@ class LogSorter(tk.Tk):
             button = tk.Button(frame, text=menu["button_text"],
                                command=functools.partial(self.show_sort_ui, menu, frame))
 
-            button.grid(row=0, column=0, padx=10, pady=5)
+            button.grid(row=0, column=0, padx=1, pady=1)
 
             menu["frame"] = frame
             self.menus.append(menu)
-            frame.grid(row=0, column=x_position, padx=10, pady=5)
+            frame.grid(row=0, column=x_position, padx=1, pady=1)
             x_position += 1
 
             # Обновление области прокрутки после добавления всех виджетов
@@ -193,10 +193,9 @@ class LogSorter(tk.Tk):
         x_position += 1
 
     def show_sort_ui(self, menu, frame):
-        # Collapse all other menus
         for m in self.menus:
             for widget in m["frame"].winfo_children():
-                if widget != m["frame"].winfo_children()[0]:  # This will ensure the button remains
+                if widget != m["frame"].winfo_children()[0]:
                     widget.grid_forget()
             m["is_expanded"] = False
 
@@ -217,7 +216,7 @@ class LogSorter(tk.Tk):
 
             menu["is_expanded"] = True
     def start_sorting(self):
-        # Your sorting logic here
+        # логика сортировки
         pass
 
 
